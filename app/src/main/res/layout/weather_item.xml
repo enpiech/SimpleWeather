@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout2">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.example.simpleweather.data.model.MainInfo" />
+
+        <variable
+            name="handler"
+            type="com.example.simpleweather.data.listener.WeatherItemListener" />
+
+        <import type="com.example.simpleweather.helper.BindingUtils" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="@dimen/cardview_default_radius"
+        app:cardElevation="@dimen/cardview_default_elevation"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/cardview_margin_16dp">
+
+            <TextView
+                android:id="@+id/txt_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textAlignment="center"
+                app:dateOfWeekIntValue="@{item.dt}"
+                app:layout_constraintBottom_toTopOf="@+id/txt_time"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@tools:sample/date/day_of_week" />
+
+            <TextView
+                android:id="@+id/txt_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textAlignment="center"
+                app:timeOfDateIntValue="@{item.dt}"
+                app:layout_constraintBottom_toTopOf="@+id/img_icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_date" />
+
+            <ImageView
+                android:id="@+id/img_icon"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:imageUrl="@{item.weather.icon}"
+                app:layout_constraintBottom_toTopOf="@+id/txt_max_temp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_time" />
+
+            <TextView
+                android:id="@+id/txt_max_temp"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/colorMaxTemp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/txt_min_temp"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/img_icon"
+                app:temperatureDegree="@{item.extendedInfo.tempMax}" />
+
+            <TextView
+                android:id="@+id/txt_min_temp"
+                android:layout_width="46dp"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/colorMinTemp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/txt_max_temp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/txt_max_temp"
+                app:temperatureDegree="@{item.extendedInfo.tempMin}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.cardview.widget.CardView>
+</layout>

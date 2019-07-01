@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="weather_view_padding_8dp">8dp</dimen>
+    <dimen name="img_portrait_8dp">8dp</dimen>
+    <dimen name="cardview_margin_16dp">16dp</dimen>
+</resources>
