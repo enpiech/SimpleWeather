@@ -2,7 +2,6 @@ package com.example.simpleweather.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
@@ -17,10 +16,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.simpleweather.BR;
-import com.example.simpleweather.data.listener.WeatherItemListener;
-import com.example.simpleweather.helper.BindingUtils;
-
-import java.util.List;
+import com.example.simpleweather.listener.WeatherItemListener;
 
 public class BaseBindingListAdapter<T> extends ListAdapter<T, BaseBindingListAdapter.BindingViewHolder>{
 
@@ -84,7 +80,12 @@ public class BaseBindingListAdapter<T> extends ListAdapter<T, BaseBindingListAda
             mLifecycleRegistry.setCurrentState(Lifecycle.State.DESTROYED);
         }
 
-        void bind(T item) {
+        /**
+         * Bind data to view holder
+         * @param item item need binding
+         * @param <T> type of item
+         */
+        <T> void bind(T item) {
             this.mBinding.setVariable(BR.item, item);
             this.mBinding.getRoot().setOnClickListener(view -> mOnClickListener.onWeatherItemClick(getAdapterPosition()));
             this.mBinding.executePendingBindings();

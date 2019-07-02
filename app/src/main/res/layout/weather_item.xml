@@ -10,10 +10,6 @@
             name="item"
             type="com.example.simpleweather.data.model.MainInfo" />
 
-        <variable
-            name="handler"
-            type="com.example.simpleweather.data.listener.WeatherItemListener" />
-
         <import type="com.example.simpleweather.helper.BindingUtils" />
     </data>
 

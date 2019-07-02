@@ -1,21 +1,14 @@
 package com.example.simpleweather.helper;
 
-import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.databinding.BindingAdapter;
-import androidx.recyclerview.widget.ListAdapter;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.simpleweather.R;
-import com.example.simpleweather.adapter.BaseBindingListAdapter;
 
 import java.util.Date;
-import java.util.List;
-
+import java.util.Locale;
 
 public class BindingUtils {
     @BindingAdapter({"imageUrl"})
@@ -30,7 +23,7 @@ public class BindingUtils {
         if (degree == null) {
             degree = -1d;
         }
-        String text = String.format("%d \u2103", Math.round(degree));
+        String text = String.format(Locale.getDefault(), "%d \u2103", Math.round(degree));
         view.setText(text);
     }
 

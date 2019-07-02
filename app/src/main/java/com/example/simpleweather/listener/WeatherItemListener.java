@@ -1,4 +1,4 @@
-package com.example.simpleweather.data.listener;
+package com.example.simpleweather.listener;
 
 public interface WeatherItemListener {
     void onWeatherItemClick(int id);

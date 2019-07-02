@@ -13,13 +13,13 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.simpleweather.adapter.BaseBindingListAdapter;
 import com.example.simpleweather.data.model.MainInfo;
-import com.example.simpleweather.data.view_model.WeatherForecastViewModel;
+import com.example.simpleweather.view_model.WeatherForecastViewModel;
 import com.example.simpleweather.databinding.ActivityMainBinding;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
-public class MainActivity extends FragmentActivity implements WeatherDetailFragment.OnFragmentInteractionListener {
+public class MainActivity extends FragmentActivity {
 
     private ActivityMainBinding mBinding;
 
@@ -65,7 +65,7 @@ public class MainActivity extends FragmentActivity implements WeatherDetailFragm
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
-        transaction.add(R.id.fragment_container, new WeatherDetailFragment());
+        transaction.add(R.id.fragment_container, WeatherDetailFragment.newInstance());
         transaction.commit();
     }
 
@@ -83,10 +83,5 @@ public class MainActivity extends FragmentActivity implements WeatherDetailFragm
                 return false;
             }
         });
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 }
