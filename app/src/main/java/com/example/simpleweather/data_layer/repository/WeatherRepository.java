@@ -1,4 +1,4 @@
-package com.example.simpleweather.data.repository;
+package com.example.simpleweather.data_layer.repository;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -6,9 +6,9 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.simpleweather.data.model.WeatherResponse;
-import com.example.simpleweather.data.remote.RetrofitService;
-import com.example.simpleweather.data.remote.WeatherAPI;
+import com.example.simpleweather.data_layer.model.WeatherResponse;
+import com.example.simpleweather.data_layer.remote.RetrofitService;
+import com.example.simpleweather.data_layer.remote.WeatherAPI;
 
 import retrofit2.Call;
 import retrofit2.Callback;

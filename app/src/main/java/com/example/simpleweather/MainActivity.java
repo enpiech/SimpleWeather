@@ -1,6 +1,5 @@
 package com.example.simpleweather;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -12,7 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.simpleweather.adapter.BaseBindingListAdapter;
-import com.example.simpleweather.data.model.MainInfo;
+import com.example.simpleweather.data_layer.model.MainInfo;
 import com.example.simpleweather.view_model.WeatherForecastViewModel;
 import com.example.simpleweather.databinding.ActivityMainBinding;
 import com.google.android.gms.ads.AdRequest;

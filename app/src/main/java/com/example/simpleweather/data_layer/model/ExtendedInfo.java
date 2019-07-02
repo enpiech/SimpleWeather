@@ -1,7 +1,6 @@
 
-package com.example.simpleweather.data.model;
+package com.example.simpleweather.data_layer.model;
 
-import com.example.simpleweather.helper.StringFormatterUtils;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

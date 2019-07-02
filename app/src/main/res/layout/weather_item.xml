@@ -8,7 +8,7 @@
 
         <variable
             name="item"
-            type="com.example.simpleweather.data.model.MainInfo" />
+            type="com.example.simpleweather.data_layer.model.MainInfo" />
 
         <import type="com.example.simpleweather.helper.BindingUtils" />
     </data>

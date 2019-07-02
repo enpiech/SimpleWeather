@@ -1,5 +1,5 @@
 
-package com.example.simpleweather.data.model;
+package com.example.simpleweather.data_layer.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

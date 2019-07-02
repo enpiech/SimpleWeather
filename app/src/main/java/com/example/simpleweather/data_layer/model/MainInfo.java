@@ -1,5 +1,5 @@
 
-package com.example.simpleweather.data.model;
+package com.example.simpleweather.data_layer.model;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.BaseObservable;

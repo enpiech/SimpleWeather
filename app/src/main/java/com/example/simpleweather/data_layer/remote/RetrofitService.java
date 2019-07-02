@@ -1,4 +1,4 @@
-package com.example.simpleweather.data.remote;
+package com.example.simpleweather.data_layer.remote;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;

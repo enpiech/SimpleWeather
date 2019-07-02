@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.example.simpleweather.data.model.MainInfo;
-import com.example.simpleweather.data.model.WeatherResponse;
-import com.example.simpleweather.data.repository.WeatherRepository;
+import com.example.simpleweather.data_layer.model.MainInfo;
+import com.example.simpleweather.data_layer.model.WeatherResponse;
+import com.example.simpleweather.data_layer.repository.WeatherRepository;
 
 import java.util.List;
 
