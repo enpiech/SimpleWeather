@@ -22,7 +22,7 @@ public class MainActivity extends FragmentActivity {
 
     private ActivityMainBinding mBinding;
 
-    WeatherForecastViewModel mForecastViewModel;
+    private WeatherForecastViewModel mForecastViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class MainActivity extends FragmentActivity {
         mForecastViewModel.getAllList().observe(this, mainInfos -> {
             Log.d("abc", "reload");
             adapter.submitList(mainInfos);
-            adapter.setOnClickListener(id -> mForecastViewModel.select(id));
+            adapter.setOnClickListener(id -> mForecastViewModel.selectInfoAt(id));
         });
 
         FragmentManager fm = getSupportFragmentManager();
@@ -72,7 +72,7 @@ public class MainActivity extends FragmentActivity {
         mBinding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                mForecastViewModel.getWeatherResponse(query);
+                mForecastViewModel.requestForecastData(query);
                 mBinding.searchView.clearFocus();
                 return true;
             }

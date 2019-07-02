@@ -125,7 +125,7 @@ public class MainInfo extends BaseObservable {
         this.snow = snow;
     }
 
-    public static DiffUtil.ItemCallback<MainInfo> DIFF_CALLBACK = new DiffUtil.ItemCallback<MainInfo>() {
+    public static final DiffUtil.ItemCallback<MainInfo> DIFF_CALLBACK = new DiffUtil.ItemCallback<MainInfo>() {
         @Override
         public boolean areItemsTheSame(@NonNull MainInfo oldItem, @NonNull MainInfo newItem) {
             return oldItem.mExtendedInfo.equals(newItem.mExtendedInfo);

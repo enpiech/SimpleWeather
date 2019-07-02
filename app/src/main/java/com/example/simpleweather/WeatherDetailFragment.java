@@ -33,14 +33,14 @@ public class WeatherDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Get viewmodel from main activity
-        WeatherForecastViewModel model = ViewModelProviders.of(getActivity()).get(WeatherForecastViewModel.class);
+        WeatherForecastViewModel viewModel = ViewModelProviders.of(getActivity()).get(WeatherForecastViewModel.class);
         // Get binding from layout
         FragmentWeatherDetailBinding binding = FragmentWeatherDetailBinding.inflate(inflater, container, false);
         binding.setLifecycleOwner(this);
+        binding.setViewmodel(viewModel);
 
         // Bind data to layout when ever it change
-        model.getResponseLiveData().observe(this, value -> binding.setCity(value.getCity()));
-        model.getSelected().observe(this, binding::setItem);
+//        viewModel.getSelected().observe(this, result -> Log.d("abc", result.getDtTxt()));
 
         return binding.getRoot();
     }

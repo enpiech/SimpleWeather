@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.simpleweather.data_layer.model.WeatherResponse;
@@ -26,19 +27,23 @@ public class WeatherRepository {
     }
 
     private final String BASE_URL = "https://api.openweathermap.org/";
-    private WeatherAPI mWeatherAPI;
-    private static MutableLiveData<WeatherResponse> mData = new MutableLiveData<>();
+    private final WeatherAPI mWeatherAPI;
+    private static final MutableLiveData<WeatherResponse> mData = new MutableLiveData<>();
 
     private WeatherRepository() {
         this.mWeatherAPI = RetrofitService.createService(WeatherAPI.class, BASE_URL);
     }
 
-    public MutableLiveData<WeatherResponse> getWeatherForecastData(String cityName) {
-        requestNewForeCastData(cityName);
+    public MutableLiveData<WeatherResponse> getWeatherResponse(String cityName) {
+        requestNewForecastData(cityName);
         return mData;
     }
 
-    private void requestNewForeCastData(String cityName) {
+    public LiveData<WeatherResponse> getWeatherResponse() {
+        return mData;
+    }
+
+    private void requestNewForecastData(String cityName) {
         new loadWeatherAsyncTask(mWeatherAPI, new Callback<WeatherResponse>() {
             @Override
             public void onResponse(@NonNull Call<WeatherResponse> call, @NonNull Response<WeatherResponse> response) {
@@ -60,8 +65,8 @@ public class WeatherRepository {
     private static class loadWeatherAsyncTask extends AsyncTask<String, Void, Void> {
 
         private final String APP_ID = "45a87f9aadf5fddecd27d0d1a5da8ba8";
-        private WeatherAPI mWeatherAPI;
-        private Callback<WeatherResponse> mCallBack;
+        private final WeatherAPI mWeatherAPI;
+        private final Callback<WeatherResponse> mCallBack;
 
         loadWeatherAsyncTask(WeatherAPI weatherAPI, Callback<WeatherResponse> callBack) {
             this.mWeatherAPI = weatherAPI;

@@ -22,6 +22,7 @@ public class City extends BaseObservable {
     @Expose
     private String country;
 
+    @Bindable
     public Integer getId() {
         return id;
     }
@@ -56,5 +57,4 @@ public class City extends BaseObservable {
     public void setCountry(String country) {
         this.country = country;
     }
-
 }

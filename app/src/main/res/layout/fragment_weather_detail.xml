@@ -9,8 +9,8 @@
             type="com.example.simpleweather.data_layer.model.MainInfo" />
 
         <variable
-            name="city"
-            type="com.example.simpleweather.data_layer.model.City" />
+            name="viewmodel"
+            type="com.example.simpleweather.view_model.WeatherForecastViewModel" />
 
         <import type="com.example.simpleweather.helper.BindingUtils" />
         <import type="android.view.View" />
@@ -29,7 +29,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:text='@{city.name + ", " + city.country}' />
+            android:text='@{viewmodel.city}'/>
+            <!--android:text='@{city.name + ", " + city.country}' />-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,20 +49,16 @@
                     android:scaleType="center"
                     android:layout_height="100dp"
                     android:layout_gravity="center"
-                    app:imageUrl="@{item.weather.icon}" />
+                    app:imageUrl="@{viewmodel.icon}"
+                    android:contentDescription="@string/weather_icon_description" />
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/txt_description"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center">
-                    <TextView
-                        android:id="@+id/txt_description"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/weather_view_padding_8dp"
-                        android:textAlignment="center"
-                        android:text="@{item.weather.description}"/>
-                </androidx.cardview.widget.CardView>
+                    android:padding="@dimen/weather_view_padding_8dp"
+                    android:textAlignment="center"
+                    android:text="@{viewmodel.weatherDescription}"/>
             </LinearLayout>
 
             <LinearLayout
@@ -76,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    app:temperatureDegree="@{item.extendedInfo.tempMax}"/>
+                    app:temperatureDegree="@{viewmodel.tempMax}"/>
 
                 <TextView
                     android:id="@+id/txt_min_temp"
@@ -84,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    app:temperatureDegree="@{item.extendedInfo.tempMin}"/>
+                    app:temperatureDegree="@{viewmodel.tempMin}"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -115,10 +112,10 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="50dp"
-                            android:contentDescription="@string/img_description_rain"
                             android:scaleType="centerInside"
                             android:src="@drawable/rain"
-                            android:padding="@dimen/img_portrait_8dp" />
+                            android:padding="@dimen/img_portrait_8dp"
+                            android:contentDescription="@string/rain_icon_description" />
 
                         <TextView
                             android:id="@+id/txt_rain_volume"
@@ -128,7 +125,7 @@
                             android:textAlignment="center"
                             android:layout_gravity="center"
 
-                            tools:volumeValue="@{item.rain.get3h()}"/>
+                            tools:volumeValue="@{viewmodel.rainVolume}"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -146,10 +143,10 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="50dp"
-                            android:contentDescription="@string/img_description_rain"
                             android:scaleType="centerInside"
                             android:src="@drawable/wind"
-                            android:padding="@dimen/img_portrait_8dp"/>
+                            android:padding="@dimen/img_portrait_8dp"
+                            android:contentDescription="@string/wind_icon_description" />
 
                         <TextView
                             android:id="@+id/txt_wind_speed"
@@ -159,7 +156,7 @@
                             android:layout_gravity="center_vertical"
                             android:textAlignment="center"
 
-                            tools:windSpeedValue="@{item.wind.speed}"/>
+                            tools:windSpeedValue="@{viewmodel.windSpeed}"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -192,7 +189,7 @@
                             android:textAlignment="center"
                             android:layout_gravity="center"
 
-                            tools:percentValue="@{item.clouds.all}" />
+                            tools:percentValue="@{viewmodel.cloudsPercent}" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
             </LinearLayout>
@@ -229,7 +226,7 @@
                             android:layout_gravity="center"
                             android:textAlignment="center"
 
-                            tools:volumeValue="@{item.snow.get3h}"/>
+                            tools:volumeValue="@{viewmodel.snowVolume}"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -259,7 +256,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
 
-                            tools:percentValue="@{item.extendedInfo.humidity}" />
+                            tools:percentValue="@{viewmodel.humidityPercent}" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -287,7 +284,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
 
-                            tools:levelValue="@{item.extendedInfo.pressure}"/>
+                            tools:levelValue="@{viewmodel.pressure}"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
             </LinearLayout>

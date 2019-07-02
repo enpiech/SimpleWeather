@@ -27,6 +27,7 @@ public class WeatherResponse extends BaseObservable {
     @Expose
     private City city;
 
+    @Bindable
     public String getCod() {
         return cod;
     }
@@ -44,6 +45,7 @@ public class WeatherResponse extends BaseObservable {
         this.message = message;
     }
 
+    @Bindable
     public Integer getCnt() {
         return cnt;
     }

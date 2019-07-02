@@ -21,8 +21,8 @@ import com.example.simpleweather.listener.WeatherItemListener;
 public class BaseBindingListAdapter<T> extends ListAdapter<T, BaseBindingListAdapter.BindingViewHolder>{
 
     private WeatherItemListener mOnClickListener;
-    private LayoutInflater mInflater;
-    private @LayoutRes int mResId;
+    private final LayoutInflater mInflater;
+    private final @LayoutRes int mResId;
 
     public BaseBindingListAdapter(Context context, @LayoutRes int resId, DiffUtil.ItemCallback<T> callback) {
         super(callback);
@@ -61,8 +61,8 @@ public class BaseBindingListAdapter<T> extends ListAdapter<T, BaseBindingListAda
 
     class BindingViewHolder extends RecyclerView.ViewHolder implements LifecycleOwner {
 
-        private ViewDataBinding mBinding;
-        private LifecycleRegistry mLifecycleRegistry;
+        private final ViewDataBinding mBinding;
+        private final  LifecycleRegistry mLifecycleRegistry;
 
 
         BindingViewHolder(@NonNull ViewDataBinding binding) {
