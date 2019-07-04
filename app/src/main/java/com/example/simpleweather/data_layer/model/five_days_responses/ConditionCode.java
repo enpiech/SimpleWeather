@@ -1,5 +1,5 @@
 
-package com.example.simpleweather.data_layer.model;
+package com.example.simpleweather.data_layer.model.five_days_responses;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.BaseObservable;
@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Weather extends BaseObservable {
+public class ConditionCode extends BaseObservable {
 
     @SerializedName("id")
     @Expose
@@ -60,14 +60,14 @@ public class Weather extends BaseObservable {
         this.icon = icon;
     }
 
-    public static DiffUtil.ItemCallback<Weather> DIFF_CALLBACK = new DiffUtil.ItemCallback<Weather>() {
+    public static DiffUtil.ItemCallback<ConditionCode> DIFF_CALLBACK = new DiffUtil.ItemCallback<ConditionCode>() {
         @Override
-        public boolean areItemsTheSame(@NonNull Weather oldItem, @NonNull Weather newItem) {
+        public boolean areItemsTheSame(@NonNull ConditionCode oldItem, @NonNull ConditionCode newItem) {
             return oldItem.id.equals(newItem.id);
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Weather oldItem, @NonNull Weather newItem) {
+        public boolean areContentsTheSame(@NonNull ConditionCode oldItem, @NonNull ConditionCode newItem) {
             return oldItem.id.equals(newItem.id);
         }
     };

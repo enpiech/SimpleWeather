@@ -6,6 +6,7 @@ import android.widget.TextView;
 import androidx.databinding.BindingAdapter;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.Date;
 import java.util.Locale;
@@ -15,6 +16,7 @@ public class BindingUtils {
     public static void loadImage(ImageView view, String imgUrl) {
         Glide.with(view.getContext())
                 .load("http://openweathermap.org/img/wn/" + imgUrl + "@2x.png")
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(view);
     }
 

@@ -1,4 +1,4 @@
-package com.example.simpleweather;
+package com.example.simpleweather.view;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -10,8 +10,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.simpleweather.adapter.BaseBindingListAdapter;
-import com.example.simpleweather.data_layer.model.MainInfo;
+import com.example.simpleweather.R;
+import com.example.simpleweather.view.WeatherDetailFragment;
+import com.example.simpleweather.data_layer.model.five_days_responses.WeatherDetail;
+import com.example.simpleweather.view.adapter.BaseBindingListAdapter;
 import com.example.simpleweather.view_model.WeatherForecastViewModel;
 import com.example.simpleweather.databinding.ActivityMainBinding;
 import com.google.android.gms.ads.AdRequest;
@@ -52,7 +54,7 @@ public class MainActivity extends FragmentActivity {
 
     private void setupRecycleView() {
         // Setup Adapter
-        final BaseBindingListAdapter<MainInfo> adapter = new BaseBindingListAdapter<>(this, R.layout.weather_item, MainInfo.DIFF_CALLBACK);
+        final BaseBindingListAdapter<WeatherDetail> adapter = new BaseBindingListAdapter<>(this, R.layout.weather_item, WeatherDetail.DIFF_CALLBACK);
         mBinding.rvWeatherList.setAdapter(adapter);
 
         // FIXME use data binding instead of this

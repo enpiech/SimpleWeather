@@ -8,7 +8,11 @@
 
         <variable
             name="item"
-            type="com.example.simpleweather.data_layer.model.MainInfo" />
+            type="com.example.simpleweather.data_layer.model.five_days_responses.WeatherDetail" />
+
+        <variable
+            name="viewModel"
+            type="com.example.simpleweather.view_model.WeatherForecastViewModel" />
 
         <import type="com.example.simpleweather.helper.BindingUtils" />
     </data>
@@ -61,7 +65,7 @@
                 android:layout_height="100dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                app:imageUrl="@{item.weather.icon}"
+                app:imageUrl="@{item.conditionCode.icon}"
                 app:layout_constraintBottom_toTopOf="@+id/txt_max_temp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -80,7 +84,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/img_icon"
-                app:temperatureDegree="@{item.extendedInfo.tempMax}" />
+                app:temperatureDegree="@{item.mainWeatherInfo.tempMax}" />
 
             <TextView
                 android:id="@+id/txt_min_temp"
@@ -92,7 +96,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/txt_max_temp"
-                app:temperatureDegree="@{item.extendedInfo.tempMin}" />
+                app:temperatureDegree="@{item.mainWeatherInfo.tempMin}" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

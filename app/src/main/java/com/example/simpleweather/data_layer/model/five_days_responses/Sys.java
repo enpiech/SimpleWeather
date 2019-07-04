@@ -1,5 +1,5 @@
 
-package com.example.simpleweather.data_layer.model;
+package com.example.simpleweather.data_layer.model.five_days_responses;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

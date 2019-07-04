@@ -1,4 +1,4 @@
-package com.example.simpleweather;
+package com.example.simpleweather.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

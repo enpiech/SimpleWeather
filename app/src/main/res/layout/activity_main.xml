@@ -7,13 +7,16 @@
     xmlns:ads="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <variable
+            name="viewModel"
+            type="com.example.simpleweather.view_model.WeatherForecastViewModel" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".MainActivity"
+        tools:context=".view.adapter.MainActivity"
         android:padding="@dimen/weather_view_padding_8dp">
 
         <androidx.appcompat.widget.SearchView
@@ -28,7 +31,6 @@
             android:layout_weight="1"
             android:orientation="vertical"/>
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,7 +44,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 tools:listitem="@layout/weather_item"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:adapter="@{viewModel.adapter}"
+                app:data="@{viewModel.data}"/>
 
             <com.google.android.gms.ads.AdView
                 android:id="@+id/adView"

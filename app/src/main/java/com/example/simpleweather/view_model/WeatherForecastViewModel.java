@@ -1,18 +1,21 @@
 package com.example.simpleweather.view_model;
 
+import android.app.Application;
+
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.example.simpleweather.data_layer.model.MainInfo;
-import com.example.simpleweather.data_layer.model.WeatherResponse;
+import com.example.simpleweather.data_layer.model.five_days_responses.WeatherDetail;
+import com.example.simpleweather.data_layer.model.five_days_responses.WeatherResponse;
 import com.example.simpleweather.data_layer.repository.WeatherRepository;
 
 import java.util.List;
 
 
-public class WeatherForecastViewModel extends ViewModel {
+public class WeatherForecastViewModel extends AndroidViewModel {
     private final String DEFAULT_CITY_NAME = "hanoi";
 
     private final WeatherRepository mWeatherRepository;
@@ -21,22 +24,23 @@ public class WeatherForecastViewModel extends ViewModel {
     private MutableLiveData<String> mCurrentCity = new MutableLiveData<>();
 
     private final LiveData<WeatherResponse> mWeatherResponse = Transformations.switchMap(this.mCurrentCity, this::getWeatherResponse);
-    private final LiveData<MainInfo> mSelection = Transformations.switchMap(this.mSelectedPos, this::getMainInfo);
-    private final LiveData<List<MainInfo>> mAllInfo = Transformations.map(this.mWeatherResponse, WeatherResponse::getMainInfo);
+    private final LiveData<WeatherDetail> mSelection = Transformations.switchMap(this.mSelectedPos, this::getMainInfo);
+    private final LiveData<List<WeatherDetail>> mAllInfo = Transformations.map(this.mWeatherResponse, WeatherResponse::getListWeatherDetails);
     private final LiveData<String> mCity = Transformations.map(this.mWeatherResponse, result -> result.getCity().getName() + ", " + result.getCity().getCountry());
-    private final LiveData<String> mWeatherDescription = Transformations.map(this.mSelection, result -> result.getWeather().getDescription());
-    private final LiveData<String> mIconName = Transformations.map(this.mSelection, result -> result.getWeather().getIcon());
-    private final LiveData<Double> mTempMin = Transformations.map(this.mSelection, result -> result.getExtendedInfo().getTempMin());
-    private final LiveData<Double> mTempMax = Transformations.map(this.mSelection, result -> result.getExtendedInfo().getTempMax());
-    private final LiveData<Double> mRainVolume = Transformations.map(this.mSelection, result -> result.getRain() != null ? result.getRain().get3h() : 0d);
+    private final LiveData<String> mWeatherDescription = Transformations.map(this.mSelection, result -> result.getConditionCode().getDescription());
+    private final LiveData<String> mIconName = Transformations.map(this.mSelection, result -> result.getConditionCode().getIcon());
+    private final LiveData<Double> mTempMin = Transformations.map(this.mSelection, result -> result.getMainWeatherInfo().getTempMin());
+    private final LiveData<Double> mTempMax = Transformations.map(this.mSelection, result -> result.getMainWeatherInfo().getTempMax());
+    private final LiveData<Double> mRainVolume = Transformations.map(this.mSelection, result -> result.getRain().getRainVolumeAt3h());
     private final LiveData<Double> mWindSpeed = Transformations.map(this.mSelection, result -> result.getWind().getSpeed());
     private final LiveData<Double> mCloudsPercent = Transformations.map(this.mSelection, result -> result.getClouds().getAll());
-    private final LiveData<Double> mSnowVolume = Transformations.map(this.mSelection, result -> result.getSnow() != null ? result.getSnow().get3h() : 0d);
-    private final LiveData<Double> mHumidityPercent = Transformations.map(this.mSelection, result -> result.getExtendedInfo().getHumidity());
-    private final LiveData<Double> mPressure = Transformations.map(this.mSelection, result -> result.getExtendedInfo().getPressure());
+    private final LiveData<Double> mSnowVolume = Transformations.map(this.mSelection, result -> result.getSnow().get3h());
+    private final LiveData<Double> mHumidityPercent = Transformations.map(this.mSelection, result -> result.getMainWeatherInfo().getHumidity());
+    private final LiveData<Double> mPressure = Transformations.map(this.mSelection, result -> result.getMainWeatherInfo().getPressure());
 
-    public WeatherForecastViewModel() {
-        this.mWeatherRepository = WeatherRepository.getInstance();
+    public WeatherForecastViewModel(Application application) {
+        super(application);
+        this.mWeatherRepository = WeatherRepository.getInstance(application);
         // Init data
         mSelectedPos.setValue(0);
         mCurrentCity.setValue(DEFAULT_CITY_NAME);
@@ -50,7 +54,7 @@ public class WeatherForecastViewModel extends ViewModel {
         this.mSelectedPos.setValue(pos);
     }
 
-    public LiveData<List<MainInfo>> getAllList() {
+    public LiveData<List<WeatherDetail>> getAllList() {
         return mAllInfo;
     }
 
@@ -98,8 +102,8 @@ public class WeatherForecastViewModel extends ViewModel {
         return mPressure;
     }
 
-    private LiveData<MainInfo> getMainInfo(int pos) {
-        return Transformations.map(this.mWeatherResponse, result -> result.getMainInfo().get(pos));
+    private LiveData<WeatherDetail> getMainInfo(int pos) {
+        return Transformations.map(this.mWeatherResponse, result -> result.getListWeatherDetails().get(pos));
     }
 
     private LiveData<WeatherResponse> getWeatherResponse(String cityName) {
