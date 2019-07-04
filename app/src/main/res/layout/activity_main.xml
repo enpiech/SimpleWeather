@@ -45,8 +45,9 @@
                 android:orientation="horizontal"
                 tools:listitem="@layout/weather_item"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:adapter="@{viewModel.adapter}"
-                app:data="@{viewModel.data}"/>
+                app:data="@{viewModel.allList}"
+                app:handler="@{viewModel.itemListener}"/>
+
 
             <com.google.android.gms.ads.AdView
                 android:id="@+id/adView"

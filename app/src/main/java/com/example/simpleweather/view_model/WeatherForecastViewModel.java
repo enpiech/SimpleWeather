@@ -6,11 +6,11 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
-import androidx.lifecycle.ViewModel;
 
 import com.example.simpleweather.data_layer.model.five_days_responses.WeatherDetail;
 import com.example.simpleweather.data_layer.model.five_days_responses.WeatherResponse;
 import com.example.simpleweather.data_layer.repository.WeatherRepository;
+import com.example.simpleweather.listener.WeatherItemListener;
 
 import java.util.List;
 
@@ -44,6 +44,7 @@ public class WeatherForecastViewModel extends AndroidViewModel {
         // Init data
         mSelectedPos.setValue(0);
         mCurrentCity.setValue(DEFAULT_CITY_NAME);
+        mItemListener.setValue(this::selectInfoAt);
     }
 
     public void requestForecastData(String cityName) {
@@ -108,5 +109,11 @@ public class WeatherForecastViewModel extends AndroidViewModel {
 
     private LiveData<WeatherResponse> getWeatherResponse(String cityName) {
         return this.mWeatherRepository.getWeatherResponse(cityName);
+    }
+
+    private MutableLiveData<WeatherItemListener> mItemListener = new MutableLiveData<>();
+
+    public LiveData<WeatherItemListener> getItemListener() {
+        return mItemListener;
     }
 }

@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.simpleweather.BR;
 import com.example.simpleweather.listener.WeatherItemListener;
 
-//TODO VIewmodel
 public class BaseBindingListAdapter<T> extends ListAdapter<T, BaseBindingListAdapter.BindingViewHolder>{
 
     private WeatherItemListener mOnClickListener;

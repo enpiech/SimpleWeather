@@ -1,17 +1,32 @@
 package com.example.simpleweather.helper;
 
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.databinding.BindingAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.simpleweather.R;
+import com.example.simpleweather.data_layer.model.five_days_responses.WeatherDetail;
+import com.example.simpleweather.listener.WeatherItemListener;
+import com.example.simpleweather.view.adapter.BaseBindingListAdapter;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class BindingUtils {
+    @BindingAdapter({"data", "handler"})
+    public static void bindAdapterData(RecyclerView view, List<WeatherDetail> data, WeatherItemListener listener) {
+        final BaseBindingListAdapter<WeatherDetail> adapter = new BaseBindingListAdapter<>(view.getContext(), R.layout.weather_item, WeatherDetail.DIFF_CALLBACK);
+        adapter.submitList(data);
+        adapter.setOnClickListener(listener);
+        view.setAdapter(adapter);
+    }
+
     @BindingAdapter({"imageUrl"})
     public static void loadImage(ImageView view, String imgUrl) {
         Glide.with(view.getContext())
