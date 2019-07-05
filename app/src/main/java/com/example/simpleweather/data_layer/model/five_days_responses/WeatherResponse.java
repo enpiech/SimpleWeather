@@ -7,6 +7,7 @@ import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
 
 import com.example.simpleweather.data_layer.constants.DBConstants;
 import com.google.gson.annotations.Expose;
@@ -24,17 +25,14 @@ public class WeatherResponse extends BaseObservable {
      * city :
      */
 
-    @Ignore
     @SerializedName("cod")
     @Expose
     private Integer cod;
 
-    @Ignore
     @SerializedName("message")
     @Expose
     private String message;
 
-    @Ignore
     @SerializedName("cnt")
     @Expose
     private Integer cnt;

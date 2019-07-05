@@ -14,11 +14,11 @@ public class Snow {
         snowVolumeAt3h = 0d;
     }
 
-    public Double get3h() {
+    public Double getSnowVolumeAt3h() {
         return snowVolumeAt3h;
     }
 
-    public void set3h(Double _3h) {
+    public void setSnowVolumeAt3h(Double _3h) {
         this.snowVolumeAt3h = _3h;
     }
 

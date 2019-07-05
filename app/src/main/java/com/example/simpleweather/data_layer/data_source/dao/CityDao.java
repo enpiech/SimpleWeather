@@ -15,10 +15,10 @@ import java.util.List;
 @Dao
 public interface CityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertCities(City... cities);
+    void insertCity(City city);
 
     @Query("SELECT * FROM " + DBConstants.CITY_TABLE_NAME)
-    LiveData<List<City>> getCities();
+    City getCity();
 
 //    @Query("SELECT * FROM " + DBConstants.CITY_TABLE_NAME + " WHERE " + DBConstants.CITY_COUNTRY + " LIKE :countryCode")
 //    public LiveData<List<City>> getCitiesIn(String countryCode);

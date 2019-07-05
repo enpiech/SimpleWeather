@@ -61,7 +61,11 @@ public class MainActivity extends FragmentActivity {
         mBinding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                mForecastViewModel.requestForecastData(query);
+                final String searchParam = query
+                        .replaceAll("\\s+","")
+                        .trim()
+                        .toLowerCase();
+                mForecastViewModel.requestForecastData(searchParam);
                 mBinding.searchView.clearFocus();
                 return true;
             }

@@ -37,6 +37,14 @@ public class MainWeatherInfo {
     @Expose
     private Double tempKf;
 
+    public Integer getDt() {
+        return dt;
+    }
+
+    public void setDt(Integer dt) {
+        this.dt = dt;
+    }
+
     public Double getTemp() {
         return temp;
     }

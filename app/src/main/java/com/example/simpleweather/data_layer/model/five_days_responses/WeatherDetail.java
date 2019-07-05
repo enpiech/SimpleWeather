@@ -9,8 +9,11 @@ import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
 
 import com.example.simpleweather.data_layer.constants.DBConstants;
+import com.example.simpleweather.data_layer.data_source.Converter.WeatherConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -30,7 +33,7 @@ public class WeatherDetail extends BaseObservable {
     @Expose
     private MainWeatherInfo mMainWeatherInfo;
 
-    @Embedded
+    @TypeConverters(WeatherConverter.class)
     @SerializedName("weather")
     @Expose
     private List<ConditionCode> mConditionCode = null;
@@ -65,6 +68,8 @@ public class WeatherDetail extends BaseObservable {
     @Expose
     private Snow snow;
 
+    public WeatherDetail() {}
+
     @Bindable
     public Integer getDt() {
         return dt;
@@ -84,14 +89,16 @@ public class WeatherDetail extends BaseObservable {
     }
 
     @Bindable
-    public java.util.List<ConditionCode> getWeathers() {
+    public List<ConditionCode> getConditionCode() {
         return mConditionCode;
     }
 
-    @Bindable
-    public ConditionCode getConditionCode() { return mConditionCode.get(0); }
+//    @Bindable
+//    public ConditionCode getConditionCode() {
+//        return mConditionCode.get(0);
+//    }
 
-    public void setConditionCode(java.util.List<ConditionCode> conditionCode) {
+    public void setConditionCode(List<ConditionCode> conditionCode) {
         this.mConditionCode = conditionCode;
     }
 

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="Encoding" addBOMForNewFiles="with NO BOM" />
+  <component name="Encoding" addBOMForNewFiles="with NO BOM">
+    <file url="file://$USER_HOME$/Documents/AndroidStudio/DeviceExplorer/huawei-jkm_lx2-2DR4C19305004678/data/data/com.example.simpleweather/databases/city" charset="windows-1258" />
+  </component>
 </project>
