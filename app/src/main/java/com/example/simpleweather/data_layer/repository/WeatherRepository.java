@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.simpleweather.data_layer.data_source.dao.CityDao;
@@ -49,7 +48,6 @@ public class WeatherRepository {
 
         mCityDao = cityDB.mCityDao();
         mWeatherDetailsDao = weatherDB.mWeatherDetailsDao();
-
     }
 
     /**
@@ -58,13 +56,17 @@ public class WeatherRepository {
      * @return weather response data
      */
     public MutableLiveData<WeatherResponse> getWeatherResponse(String cityName) {
-        new loadLastSearchCity(mCityDao, object -> {
-            if (object != null && object.getName().equalsIgnoreCase(cityName)) {
-                new loadForecastData(mCityDao, mWeatherDetailsDao, mData::setValue).execute();
-            } else {
-                requestNewForecastData(cityName);
-            }
-        }).execute();
+        if (cityName.isEmpty()) {
+            new loadForecastData(mCityDao, mWeatherDetailsDao, mData::setValue).execute();
+        } else {
+            new loadLastSearchCity(mCityDao, object -> {
+                if (object != null && object.getName().equalsIgnoreCase(cityName)) {
+                    new loadForecastData(mCityDao, mWeatherDetailsDao, mData::setValue).execute();
+                } else {
+                    requestNewForecastData(cityName);
+                }
+            }).execute();
+        }
         return mData;
     }
 
@@ -202,7 +204,7 @@ public class WeatherRepository {
 
         @Override
         protected Void doInBackground(WeatherResponse... weatherResponses) {
-            mDao.deleteAll();
+//            mDao.deleteAll();
             for (WeatherDetail param : weatherResponses[0].getListWeatherDetails()) {
                 mDao.insertWeatherDetails(param);
             }

@@ -44,7 +44,7 @@ public class WeatherForecastViewModel extends AndroidViewModel {
         this.mWeatherRepository = WeatherRepository.getInstance(application);
         // Init data
         mSelectedPos.setValue(0);
-        mCurrentCity.setValue(DEFAULT_CITY_NAME);
+        mCurrentCity.setValue("");
         mItemListener.setValue(this::selectInfoAt);
     }
 
