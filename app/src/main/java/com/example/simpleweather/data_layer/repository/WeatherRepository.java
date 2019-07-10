@@ -2,7 +2,6 @@ package com.example.simpleweather.data_layer.repository;
 
 import android.app.Application;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
@@ -206,6 +205,7 @@ public class WeatherRepository {
         protected Void doInBackground(WeatherResponse... weatherResponses) {
 //            mDao.deleteAll();
             for (WeatherDetail param : weatherResponses[0].getListWeatherDetails()) {
+                param.setCityId(weatherResponses[0].getCity().getId());
                 mDao.insertWeatherDetails(param);
             }
             return null;

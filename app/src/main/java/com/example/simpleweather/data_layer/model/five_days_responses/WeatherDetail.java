@@ -23,6 +23,10 @@ import java.util.List;
 public class WeatherDetail extends BaseObservable {
 
     @PrimaryKey
+    @ColumnInfo(name = DBConstants.CITY_ID)
+    @NonNull
+    private Integer cityId;
+
     @ColumnInfo(name = DBConstants.WEATHER_DATE)
     @SerializedName("dt")
     @Expose
@@ -69,6 +73,15 @@ public class WeatherDetail extends BaseObservable {
     private Snow snow;
 
     public WeatherDetail() {}
+
+    @NonNull
+    public Integer getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(@NonNull Integer cityId) {
+        this.cityId = cityId;
+    }
 
     @Bindable
     public Integer getDt() {
