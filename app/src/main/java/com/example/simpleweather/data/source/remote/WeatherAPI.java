@@ -1,0 +1,12 @@
+package com.example.simpleweather.data.source.remote;
+
+import com.example.simpleweather.data.model.five_days_responses.WeatherResponse;
+
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+
+public interface WeatherAPI {
+    @GET("/data/2.5/forecast?units=metric&lang=vi")
+    Call<WeatherResponse> getWeatherForecastByCityName(@Query("q") String cityName, @Query("appid") String app_id);
+}
