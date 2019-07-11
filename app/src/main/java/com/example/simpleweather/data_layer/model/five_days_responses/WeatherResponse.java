@@ -24,7 +24,6 @@ public class WeatherResponse extends BaseObservable {
      * list :
      * city :
      */
-
     @SerializedName("cod")
     @Expose
     private Integer cod;

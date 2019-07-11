@@ -3,8 +3,10 @@ package com.example.simpleweather.data_layer.constants;
 public final class DBConstants {
 
     // Table name
+    public static final String WEATHER_FORECAST_TABLE_NAME = "weather_forecast";
     public static final String WEATHER_TABLE_NAME = "weather_detail";
     public static final String CITY_TABLE_NAME = "city";
+    public static final String LAST_UPDATE = "last_update";
 
     /**
      * City info column name

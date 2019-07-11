@@ -1,4 +1,4 @@
-package com.example.simpleweather.data_layer.data_source.Converter;
+package com.example.simpleweather.data_layer.data_source.converter;
 
 import androidx.room.TypeConverter;
 

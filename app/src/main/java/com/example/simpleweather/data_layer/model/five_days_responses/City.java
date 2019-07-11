@@ -12,7 +12,7 @@ import com.example.simpleweather.data_layer.constants.DBConstants;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-@Entity
+@Entity(tableName = DBConstants.CITY_TABLE_NAME)
 public class City extends BaseObservable {
 
     @PrimaryKey
@@ -21,7 +21,7 @@ public class City extends BaseObservable {
     @Expose
     private Integer id;
 
-    @ColumnInfo(name = DBConstants.CITY_TABLE_NAME)
+    @ColumnInfo(name = DBConstants.CITY_NAME)
     @SerializedName("name")
     @Expose
     private String name;
@@ -31,9 +31,13 @@ public class City extends BaseObservable {
     @Expose
     private Coord coord;
 
+    @ColumnInfo(name = DBConstants.CITY_COUNTRY)
     @SerializedName("country")
     @Expose
     private String country;
+
+    @ColumnInfo(name = DBConstants.LAST_UPDATE)
+    private long lastUpdate;
 
     @Bindable
     public Integer getId() {
@@ -69,5 +73,13 @@ public class City extends BaseObservable {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public long getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(long lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.simpleweather.data_layer.data_source.dao;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.paging.PagedList;
 import androidx.room.Dao;
 import androidx.room.Insert;
@@ -20,9 +21,24 @@ public interface CityDao {
     @Query("SELECT * FROM " + DBConstants.CITY_TABLE_NAME)
     City getCity();
 
-//    @Query("SELECT * FROM " + DBConstants.CITY_TABLE_NAME + " WHERE " + DBConstants.CITY_COUNTRY + " LIKE :countryCode")
-//    public LiveData<List<City>> getCitiesIn(String countryCode);
+    @Query("SELECT * FROM " + DBConstants.CITY_TABLE_NAME + " WHERE " + DBConstants.CITY_NAME + " LIKE :cityName")
+    LiveData<City> getCity(String cityName);
 
-    @Query("DELETE FROM " + DBConstants.CITY_TABLE_NAME)
-    void deleteAll();
+    @Query("SELECT COUNT(*) FROM " + DBConstants.CITY_TABLE_NAME + " WHERE " + DBConstants.CITY_NAME + " LIKE :cityName AND " + DBConstants.LAST_UPDATE + " >= :timeOut")
+    Integer hasCity(String cityName, long timeOut);
+
+    @Query("SELECT * " +
+            "FROM " + DBConstants.CITY_TABLE_NAME +
+            " WHERE " + DBConstants.LAST_UPDATE + " = (SELECT MAX(" + DBConstants.LAST_UPDATE + ") FROM " + DBConstants.CITY_TABLE_NAME + ")")
+    LiveData<City> getLastCity();
+
+    @Query("SELECT " + DBConstants.CITY_ID +
+            " FROM " + DBConstants.CITY_TABLE_NAME +
+            " WHERE " + DBConstants.LAST_UPDATE + " = (SELECT MAX(" + DBConstants.LAST_UPDATE + ") FROM " + DBConstants.CITY_TABLE_NAME + ")")
+    LiveData<Integer> getLastCityId();
+
+    @Query("SELECT " + DBConstants.CITY_NAME +
+            " FROM " + DBConstants.CITY_TABLE_NAME +
+            " WHERE " + DBConstants.LAST_UPDATE + " = (SELECT MAX(" + DBConstants.LAST_UPDATE + ") FROM " + DBConstants.CITY_TABLE_NAME + ")")
+    LiveData<String> getLastCityName();
 }

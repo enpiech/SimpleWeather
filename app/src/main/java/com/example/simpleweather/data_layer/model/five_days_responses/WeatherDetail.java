@@ -8,26 +8,24 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 
 import com.example.simpleweather.data_layer.constants.DBConstants;
-import com.example.simpleweather.data_layer.data_source.Converter.WeatherConverter;
+import com.example.simpleweather.data_layer.data_source.converter.WeatherConverter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-@Entity(tableName = DBConstants.WEATHER_TABLE_NAME)
+@Entity(tableName = DBConstants.WEATHER_TABLE_NAME, primaryKeys = {DBConstants.CITY_NAME, DBConstants.WEATHER_DATE})
 public class WeatherDetail extends BaseObservable {
 
-    @PrimaryKey
-    @ColumnInfo(name = DBConstants.CITY_ID)
+    @ColumnInfo(name = DBConstants.CITY_NAME)
     @NonNull
-    private Integer cityId;
+    private String cityName;
 
     @ColumnInfo(name = DBConstants.WEATHER_DATE)
+    @NonNull
     @SerializedName("dt")
     @Expose
     private Integer dt;
@@ -75,12 +73,12 @@ public class WeatherDetail extends BaseObservable {
     public WeatherDetail() {}
 
     @NonNull
-    public Integer getCityId() {
-        return cityId;
+    public String getCityName() {
+        return cityName;
     }
 
-    public void setCityId(@NonNull Integer cityId) {
-        this.cityId = cityId;
+    public void setCityName(@NonNull String cityName) {
+        this.cityName = cityName;
     }
 
     @Bindable

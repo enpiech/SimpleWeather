@@ -2,14 +2,19 @@ package com.example.simpleweather.data_layer.repository;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.math.MathUtils;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.Transformations;
 
+import com.example.simpleweather.data_layer.data_source.WeatherForecastDatabase;
 import com.example.simpleweather.data_layer.data_source.dao.CityDao;
 import com.example.simpleweather.data_layer.data_source.dao.WeatherDetailsDao;
-import com.example.simpleweather.data_layer.data_source.database.CityDatabase;
-import com.example.simpleweather.data_layer.data_source.database.WeatherDetailDatabase;
 import com.example.simpleweather.data_layer.model.five_days_responses.City;
 import com.example.simpleweather.data_layer.model.five_days_responses.WeatherDetail;
 import com.example.simpleweather.data_layer.model.five_days_responses.WeatherResponse;
@@ -18,6 +23,7 @@ import com.example.simpleweather.data_layer.remote.WeatherAPI;
 import com.example.simpleweather.listener.OnEventListener;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,57 +40,78 @@ public class WeatherRepository {
         return sWeatherRepository;
     }
 
-    private final String BASE_URL = "https://api.openweathermap.org/";
+    private static final String BASE_URL = "https://api.openweathermap.org/";
+    private static final long FRESH_TIMEOUT = (int) Math.ceil((System.currentTimeMillis() / 1000000.0) * 1000);
+
+    private final Executor mExecutor;
     private final WeatherAPI mWeatherAPI;
     private final CityDao mCityDao;
     private final WeatherDetailsDao mWeatherDetailsDao;
     private static final MutableLiveData<WeatherResponse> mData = new MutableLiveData<>();
+    private MediatorLiveData<String> lastCity;
 
     private WeatherRepository(Application application) {
         this.mWeatherAPI = RetrofitService.createService(WeatherAPI.class, BASE_URL);
-        CityDatabase cityDB = CityDatabase.getDatabase(application);
-        WeatherDetailDatabase weatherDB = WeatherDetailDatabase.getDatabase(application);
+        WeatherForecastDatabase weatherDB = WeatherForecastDatabase.getDatabase(application);
 
-        mCityDao = cityDB.mCityDao();
+        mCityDao = weatherDB.mCityDao();
         mWeatherDetailsDao = weatherDB.mWeatherDetailsDao();
+        mExecutor = Runnable::run;
+
+        lastCity = new MediatorLiveData<>();
+    }
+
+    public void populateData() {
+        lastCity.addSource(mCityDao.getLastCityName(), name -> lastCity.setValue(name));
+    }
+
+    public void getForecastData(String cityName) {
+        lastCity.removeSource(mCityDao.getLastCityName());
+        lastCity.setValue(cityName);
+        refreshCity(cityName);
+    }
+
+//    public LiveData<City> getCity(String cityName) {
+//        refreshCity(cityName);
+//        return mCityDao.getCity(cityName);
+//    }
+
+    public LiveData<City> getCity() {
+        return Transformations.switchMap(lastCity, mCityDao::getCity);
+    }
+
+//    public LiveData<List<WeatherDetail>> getList(String cityName) {
+//        return mWeatherDetailsDao.getWeatherDetails(cityName);
+//    }
+
+    public LiveData<List<WeatherDetail>> getList() {
+        return Transformations.switchMap(lastCity, mWeatherDetailsDao::getWeatherDetails);
     }
 
     /**
-     * Get weather response for given city name, if given city name doesn't have data in database, fetch from RestAPI
-     * @param cityName city need to get weather response
-     * @return weather response data
+     * Check forecast data of city is updated, if outdated, fetch data from rest api
+     * @param cityName City name of needed forecast data
      */
-    public MutableLiveData<WeatherResponse> getWeatherResponse(String cityName) {
-        if (cityName.isEmpty()) {
-            new loadForecastData(mCityDao, mWeatherDetailsDao, mData::setValue).execute();
-        } else {
-            new loadLastSearchCity(mCityDao, object -> {
-                if (object != null && object.getName().equalsIgnoreCase(cityName)) {
-                    new loadForecastData(mCityDao, mWeatherDetailsDao, mData::setValue).execute();
-                } else {
-                    requestNewForecastData(cityName);
-                }
-            }).execute();
-        }
-        return mData;
+    private void refreshCity(final String cityName) {
+        mExecutor.execute(() -> new hasUpdatedDataTask(mCityDao, isUpdated -> {
+            if (isUpdated) return;
+            // FIXME Can be replace with WorkManager chaining work
+            fetchForeCast(cityName);
+        }).execute(cityName));
     }
 
     /**
-     * Fetch weather forecast data from RestAPI
-     * If fetch success, update database with new data
-     * @param cityName city need to get weather response
+     * Fetch forecast data from rest api then store in database if success response
+     * @param cityName City name of needed forecast data
      */
-    private void requestNewForecastData(String cityName) {
+    private void fetchForeCast(String cityName) {
         new loadWeatherAsyncTask(mWeatherAPI, new Callback<WeatherResponse>() {
             @Override
             public void onResponse(@NonNull Call<WeatherResponse> call, @NonNull Response<WeatherResponse> response) {
                 if (response.isSuccessful()) {
-                    mData.setValue(response.body());
-
-                    insert(mData.getValue().getCity());
-                    insertWeatherListFrom(mData.getValue());
-                } else {
-                    // TODO display error if response failed
+                    response.body().getCity().setLastUpdate(FRESH_TIMEOUT);
+                    insert(response.body().getCity());
+                    insertWeatherListFrom(response.body());
                 }
             }
 
@@ -93,6 +120,35 @@ public class WeatherRepository {
                 // TODO display error if failed
             }
         }).execute(cityName);
+    }
+
+    private static class hasUpdatedDataTask extends AsyncTask<String, Void, Boolean> {
+
+        private CityDao cityDao;
+        private OnEventListener<Boolean> callback;
+
+        hasUpdatedDataTask(CityDao cityDao, OnEventListener<Boolean> callback) {
+            this.cityDao = cityDao;
+            this.callback = callback;
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+//            Integer cityExists = cityDao.hasCity(params[0], FRESH_TIMEOUT);
+            Integer cityExists = cityDao.hasCity(params[0], FRESH_TIMEOUT);
+            if (cityExists == 0) {
+                Log.d("abc", "need fetch");
+            } else {
+                Log.d("abc", "cache");
+            }
+            return cityExists != 0;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isExist) {
+            callback.onReturn(isExist);
+            super.onPostExecute(isExist);
+        }
     }
 
     private static class loadWeatherAsyncTask extends AsyncTask<String, Void, Void> {
@@ -111,62 +167,10 @@ public class WeatherRepository {
             mWeatherAPI.getWeatherForecastByCityName(params[0], APP_ID).enqueue(mCallBack);
             return null;
         }
-    }
-
-    private static class loadLastSearchCity extends AsyncTask<Void, Void, City> {
-        private CityDao mDao;
-        private OnEventListener<City> mListener;
-
-        loadLastSearchCity(CityDao dao, OnEventListener<City> listener) {
-            this.mDao = dao;
-            this.mListener = listener;
-        }
 
         @Override
-        protected City doInBackground(Void... voids) {
-            return mDao.getCity();
-        }
-
-        @Override
-        protected void onPostExecute(City city) {
-            if (mListener != null) {
-                this.mListener.onReturn(city);
-            }
-
-            super.onPostExecute(city);
-        }
-    }
-
-
-    private static class loadForecastData extends AsyncTask<Void, Void, WeatherResponse> {
-        private CityDao mCityDao;
-        private WeatherDetailsDao mWeatherDao;
-        private OnEventListener<WeatherResponse> mResponse;
-
-        loadForecastData(CityDao cityDao, WeatherDetailsDao weatherDao, OnEventListener<WeatherResponse> response) {
-            this.mCityDao = cityDao;
-            this.mWeatherDao = weatherDao;
-            this.mResponse = response;
-        }
-
-        @Override
-        protected WeatherResponse doInBackground(Void... voids) {
-            WeatherResponse weatherResponse = new WeatherResponse();
-            City city = mCityDao.getCity();
-            List<WeatherDetail>listWeatherDetails = mWeatherDao.getWeatherDetails();
-            weatherResponse.setCity(city);
-            weatherResponse.setListWeatherDetails(listWeatherDetails);
-
-            return weatherResponse;
-        }
-
-        @Override
-        protected void onPostExecute(WeatherResponse weatherResponse) {
-            if (mResponse != null) {
-                mResponse.onReturn(weatherResponse);
-            }
-
-            super.onPostExecute(weatherResponse);
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
         }
     }
 
@@ -185,7 +189,6 @@ public class WeatherRepository {
 
         @Override
         protected Void doInBackground(final City... params) {
-            mAsyncTaskDao.deleteAll();
             mAsyncTaskDao.insertCity(params[0]);
             return null;
         }
@@ -203,9 +206,8 @@ public class WeatherRepository {
 
         @Override
         protected Void doInBackground(WeatherResponse... weatherResponses) {
-//            mDao.deleteAll();
             for (WeatherDetail param : weatherResponses[0].getListWeatherDetails()) {
-                param.setCityId(weatherResponses[0].getCity().getId());
+                param.setCityName(weatherResponses[0].getCity().getName());
                 mDao.insertWeatherDetails(param);
             }
             return null;
