@@ -1,6 +1,7 @@
 package com.example.simpleweather.view;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.widget.SearchView;
 import androidx.databinding.DataBindingUtil;
@@ -62,7 +63,6 @@ public class MainActivity extends FragmentActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 final String searchParam = query
-                        .replaceAll("\\s+","")
                         .trim()
                         .toLowerCase();
                 mForecastViewModel.requestForecastData(searchParam);

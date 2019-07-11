@@ -104,11 +104,6 @@ public class WeatherDetail extends BaseObservable {
         return mConditionCode;
     }
 
-//    @Bindable
-//    public ConditionCode getConditionCode() {
-//        return mConditionCode.get(0);
-//    }
-
     public void setConditionCode(List<ConditionCode> conditionCode) {
         this.mConditionCode = conditionCode;
     }

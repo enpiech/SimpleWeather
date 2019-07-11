@@ -1,17 +1,11 @@
 
 package com.example.simpleweather.data_layer.model.five_days_responses;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class MainWeatherInfo {
 
-    @SerializedName("dt")
-    @Expose
-    private Integer dt;
     @SerializedName("temp")
     @Expose
     private Double temp;
@@ -36,14 +30,6 @@ public class MainWeatherInfo {
     @SerializedName("temp_kf")
     @Expose
     private Double tempKf;
-
-    public Integer getDt() {
-        return dt;
-    }
-
-    public void setDt(Integer dt) {
-        this.dt = dt;
-    }
 
     public Double getTemp() {
         return temp;

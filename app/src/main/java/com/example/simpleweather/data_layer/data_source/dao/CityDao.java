@@ -27,18 +27,15 @@ public interface CityDao {
     @Query("SELECT COUNT(*) FROM " + DBConstants.CITY_TABLE_NAME + " WHERE " + DBConstants.CITY_NAME + " LIKE :cityName AND " + DBConstants.LAST_UPDATE + " >= :timeOut")
     Integer hasCity(String cityName, long timeOut);
 
-    @Query("SELECT * " +
-            "FROM " + DBConstants.CITY_TABLE_NAME +
-            " WHERE " + DBConstants.LAST_UPDATE + " = (SELECT MAX(" + DBConstants.LAST_UPDATE + ") FROM " + DBConstants.CITY_TABLE_NAME + ")")
-    LiveData<City> getLastCity();
-
     @Query("SELECT " + DBConstants.CITY_ID +
             " FROM " + DBConstants.CITY_TABLE_NAME +
-            " WHERE " + DBConstants.LAST_UPDATE + " = (SELECT MAX(" + DBConstants.LAST_UPDATE + ") FROM " + DBConstants.CITY_TABLE_NAME + ")")
+            " WHERE " + DBConstants.LAST_UPDATE + " = (SELECT MAX(" + DBConstants.LAST_UPDATE + ") FROM " + DBConstants.CITY_TABLE_NAME + ") " +
+            "LIMIT 1")
     LiveData<Integer> getLastCityId();
 
     @Query("SELECT " + DBConstants.CITY_NAME +
             " FROM " + DBConstants.CITY_TABLE_NAME +
-            " WHERE " + DBConstants.LAST_UPDATE + " = (SELECT MAX(" + DBConstants.LAST_UPDATE + ") FROM " + DBConstants.CITY_TABLE_NAME + ")")
+            " WHERE " + DBConstants.LAST_UPDATE + " = (SELECT MAX(" + DBConstants.LAST_UPDATE + ") FROM " + DBConstants.CITY_TABLE_NAME + ") " +
+            "LIMIT 1")
     LiveData<String> getLastCityName();
 }

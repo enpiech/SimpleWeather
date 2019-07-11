@@ -29,8 +29,8 @@ public interface WeatherDetailsDao {
     @Query("SELECT * FROM " + DBConstants.WEATHER_TABLE_NAME + " WHERE " + DBConstants.CITY_NAME + " LIKE :cityName")
     LiveData<List<WeatherDetail>> getWeatherDetails(String cityName);
 
-//    @Query("SELECT * FROM " + DBConstants.WEATHER_TABLE_NAME + " WHERE " + DBConstants.CITY_ID + " LIKE :cityId")
-//    LiveData<List<WeatherDetail>> getWeatherDetails(Integer cityId);
+    @Query("SELECT * FROM " + DBConstants.WEATHER_TABLE_NAME + " WHERE " + DBConstants.CITY_ID + " LIKE :cityId")
+    LiveData<List<WeatherDetail>> getWeatherDetails(Integer cityId);
 
     @Query("SELECT * FROM " + DBConstants.WEATHER_TABLE_NAME + " ORDER BY " + DBConstants.WEATHER_DATE +  " DESC LIMIT 1")
     LiveData<List<WeatherDetail>> getLastWeatherForecast();

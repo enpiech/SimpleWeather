@@ -5,11 +5,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.core.math.MathUtils;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 
 import com.example.simpleweather.data_layer.data_source.WeatherForecastDatabase;
@@ -41,14 +38,18 @@ public class WeatherRepository {
     }
 
     private static final String BASE_URL = "https://api.openweathermap.org/";
-    private static final long FRESH_TIMEOUT = (int) Math.ceil((System.currentTimeMillis() / 1000000.0) * 1000);
+    private static final long FRESH_TIMEOUT;
+
+    static {
+
+        FRESH_TIMEOUT = (int) Math.ceil((System.currentTimeMillis() / 1000000) * 1000);
+    }
 
     private final Executor mExecutor;
     private final WeatherAPI mWeatherAPI;
     private final CityDao mCityDao;
     private final WeatherDetailsDao mWeatherDetailsDao;
-    private static final MutableLiveData<WeatherResponse> mData = new MutableLiveData<>();
-    private MediatorLiveData<String> lastCity;
+    private static MediatorLiveData<String> lastCity;
 
     private WeatherRepository(Application application) {
         this.mWeatherAPI = RetrofitService.createService(WeatherAPI.class, BASE_URL);
@@ -61,28 +62,22 @@ public class WeatherRepository {
         lastCity = new MediatorLiveData<>();
     }
 
+    /**
+     * Get last city from database, if null: get "current" location
+     */
     public void populateData() {
         lastCity.addSource(mCityDao.getLastCityName(), name -> lastCity.setValue(name));
     }
 
     public void getForecastData(String cityName) {
-        lastCity.removeSource(mCityDao.getLastCityName());
-        lastCity.setValue(cityName);
         refreshCity(cityName);
+        lastCity.removeSource(mCityDao.getLastCityName());
+        lastCity.postValue(cityName);
     }
-
-//    public LiveData<City> getCity(String cityName) {
-//        refreshCity(cityName);
-//        return mCityDao.getCity(cityName);
-//    }
 
     public LiveData<City> getCity() {
         return Transformations.switchMap(lastCity, mCityDao::getCity);
     }
-
-//    public LiveData<List<WeatherDetail>> getList(String cityName) {
-//        return mWeatherDetailsDao.getWeatherDetails(cityName);
-//    }
 
     public LiveData<List<WeatherDetail>> getList() {
         return Transformations.switchMap(lastCity, mWeatherDetailsDao::getWeatherDetails);
@@ -108,10 +103,13 @@ public class WeatherRepository {
         new loadWeatherAsyncTask(mWeatherAPI, new Callback<WeatherResponse>() {
             @Override
             public void onResponse(@NonNull Call<WeatherResponse> call, @NonNull Response<WeatherResponse> response) {
+                Log.d("abc", response.message());
                 if (response.isSuccessful()) {
                     response.body().getCity().setLastUpdate(FRESH_TIMEOUT);
                     insert(response.body().getCity());
                     insertWeatherListFrom(response.body());
+                } else {
+                    Log.d("abc", response.message());
                 }
             }
 
@@ -167,11 +165,6 @@ public class WeatherRepository {
             mWeatherAPI.getWeatherForecastByCityName(params[0], APP_ID).enqueue(mCallBack);
             return null;
         }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
     }
 
     // FIXME using work manager instead
@@ -199,18 +192,24 @@ public class WeatherRepository {
         new insertWeatherAsyncTask(mWeatherDetailsDao).execute(weatherResponse);
     }
 
-    private static class insertWeatherAsyncTask extends AsyncTask<WeatherResponse, Void, Void> {
+    private static class insertWeatherAsyncTask extends AsyncTask<WeatherResponse, Void, String> {
         private WeatherDetailsDao mDao;
 
         insertWeatherAsyncTask(WeatherDetailsDao dao) { mDao = dao; }
 
         @Override
-        protected Void doInBackground(WeatherResponse... weatherResponses) {
+        protected String doInBackground(WeatherResponse... weatherResponses) {
             for (WeatherDetail param : weatherResponses[0].getListWeatherDetails()) {
                 param.setCityName(weatherResponses[0].getCity().getName());
                 mDao.insertWeatherDetails(param);
             }
-            return null;
+            return weatherResponses[0].getCity().getName();
+        }
+
+        @Override
+        protected void onPostExecute(String cityName) {
+            super.onPostExecute(cityName);
+            lastCity.postValue(cityName);
         }
     }
 }

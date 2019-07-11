@@ -22,9 +22,10 @@ public class WeatherForecastViewModel extends AndroidViewModel {
     private final WeatherRepository mWeatherRepository;
 
     private MutableLiveData<Integer> mSelectedPos = new MutableLiveData<>();
-    private MutableLiveData<String> mCurrentCity = new MutableLiveData<>();
 
     private final LiveData<WeatherDetail> mSelection = Transformations.switchMap(mSelectedPos, this::getMainInfo);
+    private final LiveData<List<WeatherDetail>> data;
+    private final LiveData<City> mCity;
 
     public WeatherForecastViewModel(Application application) {
         super(application);
@@ -39,37 +40,19 @@ public class WeatherForecastViewModel extends AndroidViewModel {
         mItemListener.setValue(this::selectInfoAt);
     }
 
-//    public void requestForecastData(String cityName) {
-//        this.mCurrentCity.setValue(cityName);
-//    }
     public void requestForecastData(String cityName) {
         this.mWeatherRepository.getForecastData(cityName);
     }
 
-    public void selectInfoAt(int pos) {
+    private void selectInfoAt(int pos) {
         this.mSelectedPos.setValue(pos);
     }
-
-//    LiveData<List<WeatherDetail>> data = Transformations.switchMap(this.mCurrentCity, this::getList);
-    private LiveData<List<WeatherDetail>> data;
-
-//    private LiveData<List<WeatherDetail>> getList(String cityName) {
-//        return mWeatherRepository.getList(cityName);
-//    }
 
     public LiveData<List<WeatherDetail>> getAllList() {
         return data;
     }
 
-//    private LiveData<City> mCity = Transformations.switchMap(this.mCurrentCity, this::getCityData);
-    private LiveData<City> mCity;
-
-//    private LiveData<City> getCityData(String cityName) {
-//        return mWeatherRepository.getCity(cityName);
-//    }
-
     public LiveData<String> getCity() {
-//        return Transformations.map(this.mWeatherResponse, result -> result.getCity().getName() + ", " + result.getCity().getCountry());
         return Transformations.map(this.mCity, result -> result != null ? result.getName() + ", " + result.getCountry() : "");
     }
 
