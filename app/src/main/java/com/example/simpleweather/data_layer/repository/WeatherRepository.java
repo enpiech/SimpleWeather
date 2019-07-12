@@ -1,7 +1,6 @@
 package com.example.simpleweather.data_layer.repository;
 
 import android.app.Application;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -17,10 +16,10 @@ import com.example.simpleweather.data_layer.model.five_days_responses.WeatherDet
 import com.example.simpleweather.data_layer.model.five_days_responses.WeatherResponse;
 import com.example.simpleweather.data_layer.remote.RetrofitService;
 import com.example.simpleweather.data_layer.remote.WeatherAPI;
-import com.example.simpleweather.listener.OnEventListener;
 
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,48 +36,48 @@ public class WeatherRepository {
         return sWeatherRepository;
     }
 
-    private static final String BASE_URL = "https://api.openweathermap.org/";
+    private static final String BASE_URL;
     private static final long FRESH_TIMEOUT;
+    private static final String APP_ID;
 
     static {
-
+        BASE_URL = "https://api.openweathermap.org/";
+        APP_ID = "45a87f9aadf5fddecd27d0d1a5da8ba8";
         FRESH_TIMEOUT = (int) Math.ceil((System.currentTimeMillis() / 1000000) * 1000);
     }
 
     private final Executor mExecutor;
     private final WeatherAPI mWeatherAPI;
-    private final CityDao mCityDao;
+    private static CityDao mCityDao;
     private final WeatherDetailsDao mWeatherDetailsDao;
-    private static MediatorLiveData<String> lastCity;
+    private final MediatorLiveData<String> lastCity;
 
     private WeatherRepository(Application application) {
-        this.mWeatherAPI = RetrofitService.createService(WeatherAPI.class, BASE_URL);
-        WeatherForecastDatabase weatherDB = WeatherForecastDatabase.getDatabase(application);
+        mWeatherAPI = RetrofitService.createService(WeatherAPI.class, BASE_URL);
 
+        WeatherForecastDatabase weatherDB = WeatherForecastDatabase.getDatabase(application);
         mCityDao = weatherDB.mCityDao();
         mWeatherDetailsDao = weatherDB.mWeatherDetailsDao();
-        mExecutor = Runnable::run;
+
+        mExecutor = Executors.newSingleThreadExecutor();
 
         lastCity = new MediatorLiveData<>();
+
+        getLastCity(mCityDao);
     }
 
     /**
-     * Get last city from database, if null: get "current" location
+     * Get city data from Room, auto-change if last city is changed
+     * @return City nullable data
      */
-    public void populateData() {
-        lastCity.addSource(mCityDao.getLastCityName(), name -> lastCity.setValue(name));
-    }
-
-    public void getForecastData(String cityName) {
-        refreshCity(cityName);
-        lastCity.removeSource(mCityDao.getLastCityName());
-        lastCity.postValue(cityName);
-    }
-
     public LiveData<City> getCity() {
         return Transformations.switchMap(lastCity, mCityDao::getCity);
     }
 
+    /**
+     * Get weather response detail list from Room, auto-change if last city is changed
+     * @return Nullable data list
+     */
     public LiveData<List<WeatherDetail>> getList() {
         return Transformations.switchMap(lastCity, mWeatherDetailsDao::getWeatherDetails);
     }
@@ -87,129 +86,70 @@ public class WeatherRepository {
      * Check forecast data of city is updated, if outdated, fetch data from rest api
      * @param cityName City name of needed forecast data
      */
-    private void refreshCity(final String cityName) {
-        mExecutor.execute(() -> new hasUpdatedDataTask(mCityDao, isUpdated -> {
-            if (isUpdated) return;
+    public void getForecastData(final String cityName) {
+        mExecutor.execute(() -> {
+            boolean isUpdated = mCityDao.hasCity(cityName, FRESH_TIMEOUT) > 0;
+            if (isUpdated) {
+                lastCity.postValue(cityName);
+                return;
+            }
             // FIXME Can be replace with WorkManager chaining work
             fetchForeCast(cityName);
-        }).execute(cityName));
+        });
     }
 
     /**
-     * Fetch forecast data from rest api then store in database if success response
+     * Get last city from database
+     */
+    private void getLastCity(CityDao cityDao) {
+        lastCity.addSource(cityDao.getLastCityName(), lastCity::setValue);
+    }
+
+    /**
+     * Fetch forecast data from rest api then store in database if success response, update last_update column
      * @param cityName City name of needed forecast data
      */
     private void fetchForeCast(String cityName) {
-        new loadWeatherAsyncTask(mWeatherAPI, new Callback<WeatherResponse>() {
+        mWeatherAPI.getWeatherForecastByCityName(cityName, APP_ID).enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(@NonNull Call<WeatherResponse> call, @NonNull Response<WeatherResponse> response) {
-                Log.d("abc", response.message());
                 if (response.isSuccessful()) {
                     response.body().getCity().setLastUpdate(FRESH_TIMEOUT);
+
                     insert(response.body().getCity());
                     insertWeatherListFrom(response.body());
                 } else {
+                    // TODO Notify user that there something wrong when get data
                     Log.d("abc", response.message());
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<WeatherResponse> call, @NonNull Throwable t) {
+            public void onFailure(Call<WeatherResponse> call, Throwable t) {
                 // TODO display error if failed
             }
-        }).execute(cityName);
+        });
     }
 
-    private static class hasUpdatedDataTask extends AsyncTask<String, Void, Boolean> {
-
-        private CityDao cityDao;
-        private OnEventListener<Boolean> callback;
-
-        hasUpdatedDataTask(CityDao cityDao, OnEventListener<Boolean> callback) {
-            this.cityDao = cityDao;
-            this.callback = callback;
-        }
-
-        @Override
-        protected Boolean doInBackground(String... params) {
-//            Integer cityExists = cityDao.hasCity(params[0], FRESH_TIMEOUT);
-            Integer cityExists = cityDao.hasCity(params[0], FRESH_TIMEOUT);
-            if (cityExists == 0) {
-                Log.d("abc", "need fetch");
-            } else {
-                Log.d("abc", "cache");
-            }
-            return cityExists != 0;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean isExist) {
-            callback.onReturn(isExist);
-            super.onPostExecute(isExist);
-        }
-    }
-
-    private static class loadWeatherAsyncTask extends AsyncTask<String, Void, Void> {
-
-        private final String APP_ID = "45a87f9aadf5fddecd27d0d1a5da8ba8";
-        private final WeatherAPI mWeatherAPI;
-        private final Callback<WeatherResponse> mCallBack;
-
-        loadWeatherAsyncTask(WeatherAPI weatherAPI, Callback<WeatherResponse> callBack) {
-            this.mWeatherAPI = weatherAPI;
-            this.mCallBack = callBack;
-        }
-
-        @Override
-        protected Void doInBackground(String... params) {
-            mWeatherAPI.getWeatherForecastByCityName(params[0], APP_ID).enqueue(mCallBack);
-            return null;
-        }
-    }
-
-    // FIXME using work manager instead
+    /**
+     * Insert city data to Room database
+     * @param city City data - take from rest api
+     */
     private void insert(City city) {
-        new insertCityAsyncTask(mCityDao).execute(city);
+        mExecutor.execute(() -> mCityDao.insertCity(city));
     }
 
-    private static class insertCityAsyncTask extends AsyncTask<City, Void, Void> {
-
-        private CityDao mAsyncTaskDao;
-
-        insertCityAsyncTask(CityDao dao) {
-            mAsyncTaskDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(final City... params) {
-            mAsyncTaskDao.insertCity(params[0]);
-            return null;
-        }
-    }
-
-    // FIXME using work manager instead
+    /**
+     * Insert weather details list from weather response to Room database
+     * @param weatherResponse Weather response data - take from rest api
+     */
     private void insertWeatherListFrom(WeatherResponse weatherResponse) {
-        new insertWeatherAsyncTask(mWeatherDetailsDao).execute(weatherResponse);
-    }
-
-    private static class insertWeatherAsyncTask extends AsyncTask<WeatherResponse, Void, String> {
-        private WeatherDetailsDao mDao;
-
-        insertWeatherAsyncTask(WeatherDetailsDao dao) { mDao = dao; }
-
-        @Override
-        protected String doInBackground(WeatherResponse... weatherResponses) {
-            for (WeatherDetail param : weatherResponses[0].getListWeatherDetails()) {
-                param.setCityName(weatherResponses[0].getCity().getName());
-                mDao.insertWeatherDetails(param);
+        mExecutor.execute(() -> {
+            for (WeatherDetail param : weatherResponse.getListWeatherDetails()) {
+                param.setCityName(weatherResponse.getCity().getName());
+                mWeatherDetailsDao.insertWeatherDetails(param);
             }
-            return weatherResponses[0].getCity().getName();
-        }
-
-        @Override
-        protected void onPostExecute(String cityName) {
-            super.onPostExecute(cityName);
-            lastCity.postValue(cityName);
-        }
+            lastCity.postValue(weatherResponse.getCity().getName());
+        });
     }
 }

@@ -1,6 +1,7 @@
 package com.example.simpleweather.helper;
 
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -38,10 +39,12 @@ public class BindingUtils {
     @BindingAdapter({"temperatureDegree"})
     public static void setTemperatureText(TextView view, Double degree) {
         if (degree == null) {
-            degree = -1d;
+            view.setVisibility(View.INVISIBLE);
+        } else {
+            view.setVisibility(View.VISIBLE);
+            String text = String.format(Locale.getDefault(), "%d \u2103", Math.round(degree));
+            view.setText(text);
         }
-        String text = String.format(Locale.getDefault(), "%d \u2103", Math.round(degree));
-        view.setText(text);
     }
 
     @BindingAdapter({"dateOfWeekIntValue"})

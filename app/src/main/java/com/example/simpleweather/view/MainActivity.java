@@ -20,7 +20,6 @@ import com.google.android.gms.ads.MobileAds;
 public class MainActivity extends FragmentActivity {
 
     private ActivityMainBinding mBinding;
-
     private WeatherForecastViewModel mForecastViewModel;
 
     @Override

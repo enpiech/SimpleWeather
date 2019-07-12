@@ -5,10 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
-            name="item"
-        type="com.example.simpleweather.data_layer.model.five_days_responses.WeatherDetail" />
-
-        <variable
             name="viewmodel"
             type="com.example.simpleweather.view_model.WeatherForecastViewModel" />
 
@@ -30,7 +26,6 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:text='@{viewmodel.city}'/>
-            <!--android:text='@{city.name + ", " + city.country}' />-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -106,7 +101,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        >
                         <ImageView
                             android:id="@+id/img_rain"
                             android:layout_width="0dp"
@@ -124,7 +120,6 @@
                             android:layout_height="wrap_content"
                             android:textAlignment="center"
                             android:layout_gravity="center"
-
                             tools:volumeValue="@{viewmodel.rainVolume}"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
